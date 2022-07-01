@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  body {
+    margin: 0;
+  }
+</style>
+
+<body>
+
+</body>
+<script src="../js/jquery-3.4.1.min.js"></script>
+<script src="../js/three.js"></script>
+<script src="../js/OrbitControls.js"></script>
+<script src="../js/stats.min.js"></script>
+<script>
+  let scene, camera, renderer
+  (function() {
+    scene = new THREE.Scene()
+
+    camera = new THREE.PerspectiveCamera(
+      100,
+      window.innerWidth / window.innerHeight,
+      1,
+      10000
+    )
+    camera.position.set(0, 0, 100)
+    camera.lookAt(0, 0, 0)
+
+    renderer = new THREE.WebGLRenderer({ antialias: true })
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    document.body.appendChild(renderer.domElement)
+  })()
+
+
+  let loader
+  var myImages = [
+    [
+      // z2
+      "prod-8b0829bf-4fee-40f1-9ffa-ec33d35bfc4a.jpg", // -5
+      "prod-2ddb5c99-975d-447e-806e-5353883d39e4.jpg", // -4
+      "prod-de469c63-24c3-4065-9613-8f59ebc2a168.jpg", // -3
+      "prod-dbcb5b8c-ff4b-4312-933e-4029648e6c91.jpg", // -2
+    ],
+    [
+      // z1
+      "prod-de18bdf2-de68-443d-9c81-ecf761f8e79e.jpg", // -5
+      "prod-5a65ae5e-85c0-4bce-845c-1eecbbf19c4d.jpg", // -4
+      "prod-47132b1c-c21e-49d9-92d3-81578d8b0d88.jpg", // -3
+      "prod-44aed394-1cd9-4aac-b1f4-23c2b02f55ec.jpg", // -2
+    ],
+    [
+      // z8
+      "prod-2e029e2c-70ba-4153-b5d6-49b8f01a4eb5.jpg", // -5
+      "prod-d6016af5-94c7-45c5-8d12-2412a69cccf1.jpg", // -4
+      "prod-df1e4ff9-a733-4c7d-b0cb-f7b8d8a6c04f.jpg", // -3
+      "prod-c6bdce9e-89f9-4fa8-9e95-973c582aa9bd.jpg", // -2
+    ],
+    [
+      // z7
+      "prod-468c84f1-75c9-4147-9cfe-4a00621c38d0.jpg", // -5
+      "prod-b23ae8a5-3e1a-4728-937d-0aed82b20a86.jpg", // -4
+      "prod-c18252df-e7bf-4dc1-bf73-757fc42f530d.jpg", // -3
+      "prod-bf9880e5-ac2d-4c81-a3ac-59cb9cf12943.jpg", // -2
+    ],
+    [
+      // z6
+      "prod-64075403-895e-4cea-a125-c6328fc17555.jpg", // -5
+      "prod-04c12a4d-c1ea-4dbf-a98f-3c1aae6590c1.jpg", // -4
+      "prod-c1d672e6-99f1-4b9f-8d33-e567416daef7.jpg", // -3
+      "prod-5c4a3edc-33ce-4df5-89f5-7301cbc052a1.jpg", // -2
+    ],
+    [
+      // z5
+      "prod-92352ab4-2617-4e3e-899a-18aee0c0c1cd.jpg", // -5
+      "prod-f3a5acad-8788-432d-9e5c-58a23b850882.jpg",
+      "prod-a727a1d6-9283-4262-b70d-742ba212ad88.jpg", // -3
+      "prod-70669c47-ad4a-4883-8ca4-d29e71948c89.jpg", // -2
+    ],
+    [
+      // z4
+      "prod-a5526f15-f86f-44a4-9183-fe71ebebd84e.jpg", // -5
+      "prod-6921ac6b-7431-4098-93a1-92db0defeadd.jpg", // -4
+      "prod-397ffcdd-ac5f-41e2-9c6d-2adb883d4afd.jpg", // -3
+      "prod-6280e235-baaa-4a9c-963e-dc95092c128b.jpg", // -2
+    ],
+    [
+      // z3
+      "prod-9d5ad8fc-b42d-462c-a5e6-405379450c82.jpg", // -5
+      "prod-f25cdde6-e85d-4c5f-8d2a-7da55c4e6158.jpg", // -4
+      "prod-d2413f8e-b0d2-48e2-8874-54056074b88d.jpg", // -3
+      "prod-5eb5db01-ae84-418a-9d3f-3de7bcfb0cf3.jpg", // -2
+    ],
+  ];
+
+  (function(){
+    const loader = new THREE.TextureLoader();
+    // loader.setPath( 'http://192.168.101.101:9005/mr.ke.com/demo1/' );
+    loader.setPath( '../images/' );
+
+    for (var x = 0; x < 8; x++) {
+      for (var y = 0; y < 4; y++) {
+        createSlice(x, y)
+      }
+    }
+    
+    function createSlice(xIndex, yIndex) {
+      var geometry = new THREE.SphereGeometry(5e3, 64, 64, xIndex * 2 * Math.PI / 8, 2 * Math.PI / 8, yIndex * Math.PI / 4, Math.PI / 4)
+      const material = new THREE.MeshBasicMaterial( {
+        color: 0x0f4c6a
+      } );
+      var sphere = new THREE.Mesh(geometry, material);
+      loader.load(myImages[xIndex][yIndex], function(imgMap) {
+        const imgMaterial = new THREE.MeshBasicMaterial( {
+          map: imgMap
+        } );
+        imgMaterial.side = THREE.BackSide;
+        var sphere = new THREE.Mesh(geometry, imgMaterial);
+        scene.add(sphere)
+      })
+    }
+  })()
+
+  let axesHelper
+  (function () {
+    axesHelper = new THREE.AxesHelper(80);
+    scene.add(axesHelper);
+  })();
+
+  let controls;
+  (function () {
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    // 使动画循环使用时阻尼或自转 意思是否有惯性
+    controls.enableDamping = true;
+    //动态阻尼系数 就是鼠标拖拽旋转灵敏度
+    //controls.dampingFactor = 0.25;
+    //是否可以缩放
+    controls.enableZoom = true;
+    //是否自动旋转
+    controls.autoRotate = true;
+    //设置相机距离原点的最远距离
+    controls.minDistance = 20;
+    //设置相机距离原点的最远距离
+    controls.maxDistance = 10000;
+    //是否开启右键拖拽
+    controls.enablePan = true;
+  })();
+
+  let stats;
+  (function () {
+    stats = new Stats();
+    document.body.appendChild(stats.dom);
+  })();
+
+  function addWireFrame(geometry) {
+    let tmpGeometry
+    const wireframe = new THREE.WireframeGeometry(geometry)
+    tmpGeometry = new THREE.LineSegments(wireframe)
+    tmpGeometry.material.depthTest = true
+    tmpGeometry.material.opacity = 0.15
+    tmpGeometry.material.transparent = true
+    return tmpGeometry
+  }
+
+  function animate() {
+    requestAnimationFrame(animate)
+    controls.update();
+    stats.update();
+    renderer.render(scene, camera)
+  }
+  animate()
+</script>
+
+</html>
